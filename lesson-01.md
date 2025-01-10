@@ -79,5 +79,4 @@ A Tutorial on Helm by @amandewatnitrr.
 - `helm search repo database` command will search for the database chart in the helm repositories.
 - `helm search repo database --versions` command will search for the database chart in the helm repositories along with the versions.
 
-
 ![](./demo.gif)
