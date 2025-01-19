@@ -79,4 +79,12 @@ A Tutorial on Helm by @amandewatnitrr.
 - `helm search repo database` command will search for the database chart in the helm repositories.
 - `helm search repo database --versions` command will search for the database chart in the helm repositories along with the versions.
 
-![](./demo.gif)
+![](./imgs/demo.gif)
+
+## The Magic of Helm
+
+- To experience what we can do helm and how it simplifies the deployment process, let's take an example of deploying a MySQL database on a Kubernetes cluster from bitnami repository.
+
+![](./imgs/demo1.gif)
+
+- 
