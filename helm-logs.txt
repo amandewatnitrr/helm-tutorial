@@ -1,5 +1,5 @@
 NAME: mydb
-LAST DEPLOYED: Mon Jan 20 04:38:47 2025
+LAST DEPLOYED: Mon Jan 20 04:57:16 2025
 NAMESPACE: default
 STATUS: deployed
 REVISION: 1
@@ -35,7 +35,6 @@ To connect to your database:
   2. To connect to primary service (read/write):
 
       mysql -h mydb-mysql.default.svc.cluster.local -uroot -p"$MYSQL_ROOT_PASSWORD"
-
 
 
 

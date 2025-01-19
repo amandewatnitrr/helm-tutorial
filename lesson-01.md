@@ -85,7 +85,7 @@ A Tutorial on Helm by @amandewatnitrr.
 
 - To experience what we can do helm and how it simplifies the deployment process, let's take an example of deploying a MySQL database on a Kubernetes cluster from bitnami repository.
 
-![](./imgs/demo1.gif)
+  ![](./imgs/demo1.gif)
 
 - In order to install the MySQL database on the Kubernetes cluster, we use the following command:
 
@@ -95,4 +95,19 @@ A Tutorial on Helm by @amandewatnitrr.
   
   ![](./imgs/demo2.gif)
 
-- 
+- Once the installation is doen and completed, copy the logs from the terminal and paste it on a notepad or a text editor.
+
+  Use the command and instructions as shown in the logs to connect to the MySQL database.
+
+- And, thus you can easily install a MySQL database on a Kubernetes cluster using Helm. If you want to confirm, go to the terminal where you used `minikube ssh` and run the following command:
+
+  ```bash
+  docker images
+  ```
+
+  You will see the MySQL pod running on the Kubernetes cluster.
+
+
+>[!NOTE]
+>We can not have the same chatname in the same namespace. If we want to install the same chart again, we need to provide a different name to the chart. <br><br>For that you need to create a new namespace using the command <b>`kubectl create namespace new_manespace_name`</b> and then install the chart using the command <b>`helm install mysql1 bitnami/mysql --namespace=dev1`</b>.
+
