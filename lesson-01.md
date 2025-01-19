@@ -87,4 +87,12 @@ A Tutorial on Helm by @amandewatnitrr.
 
 ![](./imgs/demo1.gif)
 
+- In order to install the MySQL database on the Kubernetes cluster, we use the following command:
+
+  ```bash
+  helm install mysql bitnami/mysql
+  ```
+  
+  ![](./imgs/demo2.gif)
+
 - 
