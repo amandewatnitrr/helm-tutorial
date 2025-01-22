@@ -144,6 +144,8 @@ A Tutorial on Helm by @amandewatnitrr.
   helm install mysql bitnami/mysql --set auth.rootPassword = test1234
   ```
 
+  ![](./imgs/demo6.gif)
+
 - We can also use `--values` flag to provide the custom values to the helm charts. For that, we need to create a file with the custom values and provide the file path to the `--values` flag.
 
   ```bash
@@ -154,7 +156,7 @@ A Tutorial on Helm by @amandewatnitrr.
 
   ```yaml
   auth:
-    rootPassword: "12345678"
+    rootPassword: "test1234"
   ```
 
   Once, you have created the `values.yaml` file, you can use the following command:
