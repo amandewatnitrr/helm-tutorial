@@ -167,7 +167,30 @@ A Tutorial on Helm by @amandewatnitrr.
 
   ![](./imgs/deom-f-flag-example.gif)
 
-  And, this will set the values as given in the `values.yaml` file.
+  In our above example gif, we created a file by name `providing-custom-values.yaml` and the content of the file is:
+
+  ```yaml
+  replicaCount: 3
+  global:
+    security:
+      allowInsecureImages: true
+  service:
+    type: NodePort
+    nodePort: 30080
+  env:
+    - name: NGINX_PORT
+      value: "8080"
+  persistence:
+    enabled: true
+    storageClass: standard
+    size: 10Gi
+  ```
+
+  And, this will set the values as given in the `values.yaml` file. And than used the command:
+
+  ```bash
+   helm install my-release oci://registry-1.docker.io/bitnamicharts/nginx -f ./experiments/providing-custom-values.yaml
+  ```
 
 ## Helm Upgrade
 
