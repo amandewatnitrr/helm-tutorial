@@ -107,7 +107,6 @@ A Tutorial on Helm by @amandewatnitrr.
 
   You will see the MySQL pod running on the Kubernetes cluster.
 
-
 >[!NOTE]
 >We can not have the same chatname in the same namespace. If we want to install the same chart again, we need to provide a different name to the chart. <br><br>For that you need to create a new namespace using the command <b>`kubectl create namespace new_manespace_name`</b> and then install the chart using the command <b>`helm install mysql1 bitnami/mysql --namespace=dev1`</b>.
 
@@ -124,6 +123,7 @@ A Tutorial on Helm by @amandewatnitrr.
   ```bash
   helm list --namespace=<namespace>
   ```
+
   ![](./imgs/demo3.gif)
 
 - To uninstall a chart from the Kubernetes cluster, we use the following command:
@@ -131,9 +131,12 @@ A Tutorial on Helm by @amandewatnitrr.
   ```bash
   helm uninstall <chart-name>
   ```
+
   ![](./imgs/demo4.gif)
 
 ## Providing Custom Values to the Helm Charts
+
+![](./imgs/demo5.gif)
 
 - So, in the previous example, we installed the MySQL database on the Kubernetes cluster using the bitnami repository. But, what if we want to provide some custom values to the MySQL database like password, you can do it using `--set` flag, as follows:
 
@@ -161,3 +164,10 @@ A Tutorial on Helm by @amandewatnitrr.
   ```
 
   And, this will set the values as given in the `values.yaml` file.
+
+## Helm Upgrade
+
+> [!NOTE]
+> `helm repo update` <br>
+> These command will fetch the latest charts by going to the repository.
+> ![](./imgs/Screenshot%202025-01-23%20at%202.47.59 AM.png)
