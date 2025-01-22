@@ -165,6 +165,8 @@ A Tutorial on Helm by @amandewatnitrr.
   helm install mysql bitnami/mysql --values /path/to/values.yaml
   ```
 
+  ![](./imgs/deom-f-flag-example.gif)
+
   And, this will set the values as given in the `values.yaml` file.
 
 ## Helm Upgrade

@@ -1,0 +1,14 @@
+replicaCount: 3
+global:
+  security:
+    allowInsecureImages: true
+service:
+  type: NodePort
+  nodePort: 30080
+env:
+  - name: NGINX_PORT
+    value: "8080"
+persistence:
+  enabled: true
+  storageClass: standard
+  size: 10Gi
