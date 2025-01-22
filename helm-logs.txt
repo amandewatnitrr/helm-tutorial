@@ -1,51 +1,47 @@
 NAME: mydb
-LAST DEPLOYED: Mon Jan 20 05:59:42 2025
-NAMESPACE: db
+LAST DEPLOYED: Thu Jan 23 02:37:02 2025
+NAMESPACE: default
 STATUS: deployed
 REVISION: 1
 TEST SUITE: None
 NOTES:
-Create an MySQL InnoDB Cluster by executing:
-1. When using a source distribution / git clone: `helm install [cluster-name] -n [ns-name] ~/helm/mysql-innodbcluster`
-2. When using the Helm repo from ArtifactHub
-2.1 With self signed certificates
-    export NAMESPACE="your-namespace"
-    # in case the namespace doesn't exist, please pass --create-namespace
-    helm install my-mysql-innodbcluster mysql-operator/mysql-innodbcluster -n $NAMESPACE \
-        --version 2.2.0 \
-        --set credentials.root.password=">-0URS4F3P4SS" \
-        --set tls.useSelfSigned=true
+CHART NAME: mysql
+CHART VERSION: 12.2.1
+APP VERSION: 8.4.3
 
-2.2 When you have own CA and TLS certificates
-        export NAMESPACE="your-namespace"
-        export CLUSTER_NAME="my-mysql-innodbcluster"
-        export CA_SECRET="$CLUSTER_NAME-ca-secret"
-        export TLS_SECRET="$CLUSTER_NAME-tls-secret"
-        export ROUTER_TLS_SECRET="$CLUSTER_NAME-router-tls-secret"
-        # Path to ca.pem, server-cert.pem, server-key.pem, router-cert.pem and router-key.pem
-        export CERT_PATH="/path/to/your/ca_and_tls_certificates"
+Did you know there are enterprise versions of the Bitnami catalog? For enhanced secure software supply chain features, unlimited pulls from Docker, LTS support, or application customization, see Bitnami Premium or Tanzu Application Catalog. See https://www.arrow.com/globalecs/na/vendors/bitnami for more information.
 
-        kubectl create namespace $NAMESPACE
+** Please be patient while the chart is being deployed **
 
-        kubectl create secret generic $CA_SECRET \
-            --namespace=$NAMESPACE --dry-run=client --save-config -o yaml \
-            --from-file=ca.pem=$CERT_PATH/ca.pem \
-        | kubectl apply -f -
+Tip:
 
-        kubectl create secret tls $TLS_SECRET \
-            --namespace=$NAMESPACE --dry-run=client --save-config -o yaml \
-            --cert=$CERT_PATH/server-cert.pem --key=$CERT_PATH/server-key.pem \
-        | kubectl apply -f -
+  Watch the deployment status using the command: kubectl get pods -w --namespace default
 
-        kubectl create secret tls $ROUTER_TLS_SECRET \
-            --namespace=$NAMESPACE --dry-run=client --save-config -o yaml \
-            --cert=$CERT_PATH/router-cert.pem --key=$CERT_PATH/router-key.pem \
-        | kubectl apply -f -
+Services:
 
-        helm install my-mysql-innodbcluster mysql-operator/mysql-innodbcluster -n $NAMESPACE \
-        --version 2.2.0 \
-        --set credentials.root.password=">-0URS4F3P4SS" \
-        --set tls.useSelfSigned=false \
-        --set tls.caSecretName=$CA_SECRET \
-        --set tls.serverCertAndPKsecretName=$TLS_SECRET \
-        --set tls.routerCertAndPKsecretName=$ROUTER_TLS_SECRET
+  echo Primary: mydb-mysql.default.svc.cluster.local:3306
+
+Execute the following to get the administrator credentials:
+
+  echo Username: root
+  MYSQL_ROOT_PASSWORD=$(kubectl get secret --namespace default mydb-mysql -o jsonpath="{.data.mysql-root-password}" | base64 -d)
+
+To connect to your database:
+
+  1. Run a pod that you can use as a client:
+
+      kubectl run mydb-mysql-client --rm --tty -i --restart='Never' --image  docker.io/bitnami/mysql:8.4.3-debian-12-r5 --namespace default --env MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD --command -- bash
+
+  2. To connect to primary service (read/write):
+
+      mysql -h mydb-mysql.default.svc.cluster.local -uroot -p"$MYSQL_ROOT_PASSWORD"
+
+
+
+
+
+
+WARNING: There are "resources" sections in the chart not set. Using "resourcesPreset" is not recommended for production. For production installations, please set the following values according to your workload needs:
+  - primary.resources
+  - secondary.resources
++info https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/

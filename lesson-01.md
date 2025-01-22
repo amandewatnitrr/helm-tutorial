@@ -132,3 +132,32 @@ A Tutorial on Helm by @amandewatnitrr.
   helm uninstall <chart-name>
   ```
   ![](./imgs/demo4.gif)
+
+## Providing Custom Values to the Helm Charts
+
+- So, in the previous example, we installed the MySQL database on the Kubernetes cluster using the bitnami repository. But, what if we want to provide some custom values to the MySQL database like password, you can do it using `--set` flag, as follows:
+
+  ```bash
+  helm install mysql bitnami/mysql --set auth.rootPassword = test1234
+  ```
+
+- We can also use `--values` flag to provide the custom values to the helm charts. For that, we need to create a file with the custom values and provide the file path to the `--values` flag.
+
+  ```bash
+  helm install mysql bitnami/mysql --values values.yaml
+  ```
+
+  The `values.yaml` file in our case will look like:
+
+  ```yaml
+  auth:
+    rootPassword: "12345678"
+  ```
+
+  Once, you have created the `values.yaml` file, you can use the following command:
+
+  ```bash
+  helm install mysql bitnami/mysql --values /path/to/values.yaml
+  ```
+
+  And, this will set the values as given in the `values.yaml` file.
