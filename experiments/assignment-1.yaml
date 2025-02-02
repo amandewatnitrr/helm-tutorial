@@ -1,0 +1,4 @@
+tomcatPassword: BtjztgfSBO
+service:
+  type: NodePort
+  nodePort: 30007

@@ -64,6 +64,7 @@ A Tutorial on Helm by @amandewatnitrr.
 
   ```bash
   helm repo list
+  # helm repo ls
   ```
 
 - To install a chart from the repository, we use the following command:
@@ -198,3 +199,92 @@ A Tutorial on Helm by @amandewatnitrr.
 > `helm repo update` <br>
 > These command will fetch the latest charts by going to the repository.
 > ![](./imgs/Screenshot%202025-01-23%20at%202.47.59 AM.png)
+
+> [!NOTE]
+> `helm upgrade <chart-name> <chart-repo/chart-name> --values values.yaml` <br>
+> This command will upgrade the chart with the new values provided in the `values.yaml` file.
+
+  For example, let's say we want to update the replicaCount to 4 in the `values.yaml` file, make changes to the `values.yaml` file as follows:
+
+  ```yaml
+  replicaCount: 4
+  global:
+    security:
+      allowInsecureImages: true
+  service:
+    type: NodePort
+    nodePort: 30080
+  env:
+    - name: NGINX_PORT
+      value: "8080"
+  persistence:
+    enabled: true
+    storageClass: standard
+    size: 10Gi
+  ```
+
+  Than, use the following command to upgrade the chart:
+
+  ```bash
+  helm upgrade my-release oci://registry-1.docker.io/bitnamicharts/nginx --values ./experiments/providing-custom-values.yaml
+  ```
+
+  ![](./imgs/demo6.gif)
+
+> [!IMPORTANT]
+> Helm is intelligent enough to only push those changes to the kubernetes cluster that are required if there are no updates to the chart version that we are using, it won't send any updates to the kubernetes cluster.
+> It will generate the Kubernetes Templates and compare them with the existing templates on the cluster and only push the changes that are required.
+
+## Release Records
+
+- Run the command `helm list` to list all the releases that are installed on the Kubernetes cluster.
+
+  ```bash
+  > helm ls
+
+  NAME            NAMESPACE       REVISION        UPDATED                                 STATUS          CHART           APP VERSION
+  my-release      default         2               2025-02-02 04:32:34.639945 +0530 IST    deployed        nginx-18.3.5    1.27.3
+  ```
+
+- Now, run the command:
+
+  ```bash
+  kubectl get secrets
+  ```
+
+  And, you will see some secrets created by the helm, like this:
+
+  ![](./imgs/Screenshot%202025-02-02%20at%205.32.06 PM.png)
+
+  There's one secret for NGINX Installation, and other 2 secrets for same installation, for each version of the installation. So, when we first installed nginx, `sh.helm.v1.my-release.v1` was created, and when we upgraded the nginx, `sh.helm.v1.my-release.v2` was created.
+
+- This secret record has the entire information about he installation, this is how helm maintains the revision history.
+
+- We might discuss about this in depth in the coming lessons.
+
+- Also, once we do `helm uninstall <chart-name>`, it will remove all the resources from the kubernetes cluster.
+
+  Not only installation will be gone, but also the version information will be gone.
+
+  > [!TIP]
+  > If you want to retain this information for rollback etc, which we will learn in other section later on, you can use the `--keep-history` flag with the `helm uninstall` command.<br/>
+  > In versions before Helm 3, `--keep-history` was the default behavior, but in Helm 3, it is not the default behavior.
+
+## Assignment
+
+- Pull `bitnami/tomcat` chart from the bitnami repository and install it on the Kubernetes cluster.
+  
+- Create a `values.yaml` file with the following content:
+
+  ```yaml
+  tomcatPassword: BtjztgfSBO
+  service:
+    type: NodePort # It's a LoadBalancer by default
+    nodePort: 30007
+  ```
+
+- Use the `helm upgrade` command to update the chart with the new values provided in the `values.yaml` file.
+
+- Once, done show the changes by running the `kubectl get services <service-name> -o yaml` command.
+
+- Use `helm delete <chart-name>` to delete the chart from the Kubernetes cluster.
