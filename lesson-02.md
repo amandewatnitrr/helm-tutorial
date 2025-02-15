@@ -115,3 +115,115 @@
 
   ![](./imgs/demo9.gif)
 
+## helm get
+
+- `helm get` command is used to get information about a release or specific resources in a release.
+
+  ![](./imgs/demo10.gif)
+
+  We have the following options with `helm get` command:
+
+  - `helm get all <release-name>`: Get all information about a release.
+  - `helm get values <release-name>`: Get the values used to render the templates in a release.
+  - `helm get manifest <release-name>`: Get the rendered templates in a release.
+  - `helm get notes <release-name>`: Get the notes associated with a release.
+  - `helm get hooks <release-name>`: Get the hooks associated with a release.
+  - `helm get metadata <release-name>`: Get the metadata associated with a release.
+
+- Special Flags:
+
+  - `helm get values <release-name> --all`: Get all values used to render the templates in a release.
+
+  - `helm get values <release-name> --revision <revision-number>`: Get the values used to render the templates in a specific revision of a release.
+  
+## helm history
+
+- `helm history` command is used to view the history of a release. It gives us the history of installation and updates.
+
+- It also records the errors that occurred during the installation or upgrade process. You cans see this in the example below.
+
+  <details>
+    <Summary>Example</Summary>
+
+    ```sh
+     -> helm upgrade my-release oci://registry-1.docker.io/bitnamicharts/nginx --set image.pullPolicy=test
+     
+     Pulled: registry-1.docker.io/bitnamicharts/nginx:19.0.0
+
+     Digest: sha256:2f44dab10fd9cf93faf1cd54ec5f30de3c139ad5de2c2d9d04a97f483e823e71
+
+     Error: UPGRADE FAILED: cannot patch "my-release-nginx" with kind Deployment: Deployment.apps "my-release-nginx" is invalid: [spec.template.spec.containers[0].imagePullPolicy: Unsupported value: "test": supported values: "Always", "IfNotPresent", "Never", spec.template.spec.initContainers[0].imagePullPolicy: Unsupported value: "test": supported values: "Always", "IfNotPresent", "Never"]
+
+     -> helm history my-release
+     REVISION        UPDATED                         STATUS          CHART           APP VERSION     DESCRIPTION                                              
+     1               Thu Jan 23 03:45:39 2025        superseded      nginx-18.3.5    1.27.3          Install complete
+     2               Sun Feb  2 04:32:34 2025        deployed        nginx-18.3.5    1.27.3          Upgrade complete
+     3               Sat Feb 15 14:00:36 2025        failed          nginx-19.0.0    1.27.4          Upgrade "my-release" failed: cannot patch "my-release-nginx" with kind Deployment: Deployment.apps "my-release-nginx" is invalid: [spec.template.spec.containers[0].imagePullPolicy: Unsupported value: "test": supported values: "Always", "IfNotPresent", "Never", spec.template.spec.initContainers[0].imagePullPolicy: Unsupported value: "test": supported values: "Always", "IfNotPresent", "Never"]
+    ```
+
+  </details>
+
+## helm rollback
+
+- `helm rollback` command is used to rollback a release to a previous revision.
+
+- Example:
+  
+  ![](./imgs/demo11.gif)
+
+- And all this is using the data stored in the secrets, here below you can see:
+
+  ```sh
+  -> kubectl get secrets 
+
+  NAME                               TYPE                 DATA   AGE
+
+  my-release-nginx-tls               kubernetes.io/tls    3      23d
+  sh.helm.release.v1.my-release.v1   helm.sh/release.v1   1      23d
+  sh.helm.release.v1.my-release.v2   helm.sh/release.v1   1      13d
+  sh.helm.release.v1.my-release.v3   helm.sh/release.v1   1      24m
+  sh.helm.release.v1.my-release.v4   helm.sh/release.v1   1      3m52s
+  ```
+
+<br>
+
+  > [!NOTE]
+  > If you delete the release using `helm uninstall`, the secrets will also be deleted. And, hence you will not be able to rollback. In order, to be able to rollback, we need to use `--keep-history` flag with `helm uninstall`.<br><br>
+  > In which case if you use, the flag you can easily rollback using the command:
+  > ```
+  > helm rollback <release-name> <revision-number>
+  > ```
+  > And, in addition to that all the history also remains retained.
+
+  ![](./imgs/demo12.gif)
+
+
+## `helm upgrade --install`
+
+- `helm upgrade --install` command is used to install a release if it does not exist or upgrade a release if it already exists.
+
+- This command is useful when you want to install a release for the first time or upgrade an existing release with new values or chart version.
+
+## `--generate-name` & `--create-namespace`
+
+- `--generate-name` flag is used to generate a unique release name for a release.
+
+- This flag is useful when you want Helm to generate a unique release name for you, instead of specifying a release name manually.
+
+- Example:
+
+  ```sh
+  helm install --generate-name oci://registry-1.docker.io/bitnamicharts/nginx
+  ```
+
+- `--create-namespace` flag is used to create a new namespace if it does not exist.
+
+- This flag is useful when you want to install a release in a new namespace that does not exist on the cluster.
+
+- Example:
+
+  ```sh
+  helm install --create-namespace --namespace my-namespace oci://registry-1.docker.io/bitnamicharts/nginx
+  ```
+
+  ![](./imgs/demo13.gif)
