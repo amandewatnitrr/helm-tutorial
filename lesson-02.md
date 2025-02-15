@@ -190,9 +190,11 @@
   > [!NOTE]
   > If you delete the release using `helm uninstall`, the secrets will also be deleted. And, hence you will not be able to rollback. In order, to be able to rollback, we need to use `--keep-history` flag with `helm uninstall`.<br><br>
   > In which case if you use, the flag you can easily rollback using the command:
+>
   > ```
   > helm rollback <release-name> <revision-number>
   > ```
+>
   > And, in addition to that all the history also remains retained.
 
   ![](./imgs/demo12.gif)
@@ -227,3 +229,115 @@
   ```
 
   ![](./imgs/demo13.gif)
+
+- We can also try some more things around `--generate-name` by having a template for the release name.
+
+  ```sh
+  helm install --generate-name --name-template "something-{{randAlpha 7 | lower}}" oci://registry-1.docker.io/bitnamicharts/nginx
+  ```
+
+  This will generate a release name like `something-abcde` or `something-xyzabc`.
+
+  > [!CAUTION]
+  > The `--name-template` flag is recommended to add only small case alphabets only and not Capital letters or special characters, as it may lead to errors associated to secret saying that the secret name that is derived from the release name cannot have special characters or capital letters.
+
+  <div class="warning" style='background-color:rgb(33, 33, 33); color:rgb(255, 198, 11); border-left: solidrgb(251, 249, 128) 4px; border-radius: 4px; padding:0.7em;'>
+  <span>
+  <p style='margin-top:1em; text-align:center'>
+  <b>Note</b></p>
+  <p style='margin-left:1em;'>
+  The <code>--name-template</code> flag is part of templating engine, and we will soon study in detail about this in lessons ahead.
+  </p>
+  <p style='margin-bottom:1em; margin-right:1em; text-align:right; font-family:Georgia'> <b>- Aman Kumar Dewangan</b> <i>(Helm Tutorial, 2025)</i>
+  </p></span>
+  </div>
+
+## `--wait` & `--timeout`
+
+- When we do a helm install, the helm install command considers the installaton to be successfull as soon as the manifest is recieved by the Kubernetes API Server. It doesn't wait for the resources to be fully created on the cluster.
+
+  If we want that to happen we can use:
+
+  - `--wait` flag is used to wait for all resources to be in a ready state before marking the release as successful.
+
+    - The installation is considered successful only when all resources are in a ready state, otherwise the installation is considered failed.
+
+    - By, default it waits for 300 seconds.
+
+  If we want to change the timeout, we can use ``--timeout`` flag.
+
+  - `--timeout` flag is used to specify the time to wait for all resources to be in a ready state.
+
+    Specify the time in minutes and seconds as `xmys`, this is what we need tot just specify the time in minutes.
+
+    - It is important to understand that image pull can take tim, depending on the netowrk bandwidth and hence we need to specify the time accordingly.
+
+      So, the failure maynot be anything on the Kubernetes Cluster.
+
+<details>
+  <Summary>Example</Summary>
+
+  ```sh
+  helm install --wait --timeout 5m10s my-release oci://registry-1.docker.io/bitnamicharts/nginx
+  ```
+
+</details>
+
+## atomic install
+
+- If you don't want the installation to be marked as failure if the installation doesn't complete during specified wait time or timeout, we can use `--atomic` flag.
+
+  - `--atomic` flag will automatically rollback to the last succesfull release if the installation fails.
+
+    When we use `--atomic` flag, `--wait` flag is automatically enabled.
+
+    This is helpful in CI/CD Pipelines where you don't just want to leave it at a failure state, it can rollback to a previous successfull release.
+
+  - This helps you deal with scenarios where:
+
+    - The installation is taking longer than expected.
+    - The installation fails within the default time period
+    - The installation fails due to an error in the chart or values.
+    - The installation fails due to an error in the Kubernetes cluster.
+    - The installation fails due to an error in the network or image pull.
+    - The installation fails due to an error in the Helm or Tiller.
+    - The installation fails due to an error in the API Server.
+    - The installation fails due to an error in the Kubernetes resources.
+    - The installation fails due to an error in the Kubernetes objects.
+    - The installation fails due to an error in the Kubernetes schema.
+    - The installation fails due to an error in the Kubernetes API and Server.
+
+## Forceful Upgrades & Cleanup on Failed Updates
+
+- `--force` flag is used to force an upgrade to a release, even if the release is in a failed state.
+
+  This flag is useful when you want to upgrade a release that is in a failed state, without having to rollback to a previous revision.
+
+  >[!IMPORTANT]
+  ><details>
+  >  <summary>Example</summary>
+  >
+    >```sh
+    > helm upgrade --force my-release oci://registry-1.docker.io/bitnamicharts/nginx --values values.yaml
+    > ```
+  >
+  > This will force the upgrade to the release `my-release` even if it is in a failed state.
+  > It will delete the olded resources and create new resources, as per the changes in the chart or values.
+  ></details>
+
+- `--cleanup-on-failure` flag is used to cleanup resources created during a failed upgrade. 
+
+  This flag is useful when you want to cleanup resources created during a failed upgrade, without having to rollback to a previous revision.
+
+
+  >[!IMPORTANT]
+  ><details>
+  >  <summary>Example</summary>
+  >
+    >```sh
+    > helm upgrade --cleanup-on-failure my-release oci://registry-1.docker.io/bitnamicharts/nginx --values values.yaml
+    > ```
+  >
+  > This will cleanup resources created during a failed upgrade to the release `my-release`.
+  > It will delete the resources that were created during the failed upgrade.
+  ></details>
