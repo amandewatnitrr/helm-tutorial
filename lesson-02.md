@@ -313,8 +313,8 @@
 
   This flag is useful when you want to upgrade a release that is in a failed state, without having to rollback to a previous revision.
 
-  > [!NOTE]
-  ><details>
+  >[!NOTE]
+  > <details>
   >  <summary>Example</summary>
   >
     >```sh
@@ -330,8 +330,8 @@
   This flag is useful when you want to cleanup resources created during a failed upgrade, without having to rollback to a previous revision.
 
 
-  > [!NOTE]
-  ><details>
+  >[!NOTE]
+  > <details>
   >  <summary>Example</summary>
   >
     >```sh
