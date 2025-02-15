@@ -242,17 +242,6 @@
   >
   >The `--name-template` flag is recommended to add only small case alphabets only and not Capital letters or special characters, as it may lead to errors associated to secret saying that the secret name that is derived from the release name cannot have special characters or capital letters.
 
-  <div class="warning" style='background-color:rgb(33, 33, 33); color:rgb(255, 198, 11); border-left: solidrgb(251, 249, 128) 4px; border-radius: 4px; padding:0.7em;'>
-  <span>
-  <p style='margin-top:1em; text-align:center'>
-  <b>Note</b></p>
-  <p style='margin-left:1em;'>
-  The <code>--name-template</code> flag is part of templating engine, and we will soon study in detail about this in lessons ahead.
-  </p>
-  <p style='margin-bottom:1em; margin-right:1em; text-align:right; font-family:Georgia'> <b>- Aman Kumar Dewangan</b> <i>(Helm Tutorial, 2025)</i>
-  </p></span>
-  </div>
-
 ## `--wait` & `--timeout`
 
 - When we do a helm install, the helm install command considers the installaton to be successfull as soon as the manifest is recieved by the Kubernetes API Server. It doesn't wait for the resources to be fully created on the cluster.
