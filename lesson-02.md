@@ -238,7 +238,7 @@
 
   This will generate a release name like `something-abcde` or `something-xyzabc`.
 
-  >[!DANGER]
+  > [!CAUTION]
   >The `--name-template` flag is recommended to add only small case alphabets only and not Capital letters or special characters, as it may lead to errors associated to secret saying that the secret name that is derived from the release name cannot have special characters or capital letters.
 
   <div class="warning" style='background-color:rgb(33, 33, 33); color:rgb(255, 198, 11); border-left: solidrgb(251, 249, 128) 4px; border-radius: 4px; padding:0.7em;'>
@@ -313,10 +313,10 @@
 
   This flag is useful when you want to upgrade a release that is in a failed state, without having to rollback to a previous revision.
 
-  >[!NOTE]
-  >```sh
+  > [!NOTE]
+  > ```sh
   > helm upgrade --force my-release oci://registry-1.docker.io/bitnamicharts/nginx --values values.yaml
-    > ```
+  > ```
   >
   > This will force the upgrade to the release `my-release` even if it is in a failed state.
   > It will delete the olded resources and create new resources, as per the changes in the chart or values.
@@ -325,9 +325,8 @@
 
   This flag is useful when you want to cleanup resources created during a failed upgrade, without having to rollback to a previous revision.
 
-
-  >[!NOTE]
-  >```sh
+  > [!NOTE]
+  > ```sh
   > helm upgrade --cleanup-on-failure my-release oci://registry-1.docker.io/bitnamicharts/nginx --values values.yaml
   > ```
   >
