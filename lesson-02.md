@@ -238,7 +238,7 @@
 
   This will generate a release name like `something-abcde` or `something-xyzabc`.
 
-  >[!CAUTION]
+  >[!DANGER]
   >The `--name-template` flag is recommended to add only small case alphabets only and not Capital letters or special characters, as it may lead to errors associated to secret saying that the secret name that is derived from the release name cannot have special characters or capital letters.
 
   <div class="warning" style='background-color:rgb(33, 33, 33); color:rgb(255, 198, 11); border-left: solidrgb(251, 249, 128) 4px; border-radius: 4px; padding:0.7em;'>
