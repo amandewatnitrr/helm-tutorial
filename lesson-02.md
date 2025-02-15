@@ -238,9 +238,8 @@
 
   This will generate a release name like `something-abcde` or `something-xyzabc`.
 
-  > [!CAUTION]
-  >
-  >The `--name-template` flag is recommended to add only small case alphabets only and not Capital letters or special characters, as it may lead to errors associated to secret saying that the secret name that is derived from the release name cannot have special characters or capital letters.
+> [!CAUTION]
+>The `--name-template` flag is recommended to add only small case alphabets only and not Capital letters or special characters, as it may lead to errors associated to secret saying that the secret name that is derived from the release name cannot have special characters or capital letters.
 
 ## `--wait` & `--timeout`
 
