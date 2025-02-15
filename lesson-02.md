@@ -313,7 +313,7 @@
 
   This flag is useful when you want to upgrade a release that is in a failed state, without having to rollback to a previous revision.
 
-  >[!IMPORTANT]
+  >[!NOTE]
   ><details>
   >  <summary>Example</summary>
   >
@@ -330,7 +330,7 @@
   This flag is useful when you want to cleanup resources created during a failed upgrade, without having to rollback to a previous revision.
 
 
-  >[!IMPORTANT]
+  >[!NOTE]
   ><details>
   >  <summary>Example</summary>
   >
