@@ -302,24 +302,24 @@
 
   This flag is useful when you want to upgrade a release that is in a failed state, without having to rollback to a previous revision.
 
-  > [!NOTE]
-  >
-  > ```sh
-  > helm upgrade --force my-release oci://registry-1.docker.io/bitnamicharts/nginx --values values.yaml
-  > ```
-  >
-  > This will force the upgrade to the release `my-release` even if it is in a failed state.
-  > It will delete the olded resources and create new resources, as per the changes in the chart or values.
+> [!NOTE]
+>
+> ```sh
+> helm upgrade --force my-release oci://registry-1.docker.io/bitnamicharts/nginx --values values.yaml
+> ```
+>
+> This will force the upgrade to the release `my-release` even if it is in a failed state.
+> It will delete the olded resources and create new resources, as per the changes in the chart or values.
 
 - `--cleanup-on-failure` flag is used to cleanup resources created during a failed upgrade. 
 
   This flag is useful when you want to cleanup resources created during a failed upgrade, without having to rollback to a previous revision.
 
-  > [!NOTE]
-  >
-  > ```sh
-  > helm upgrade --cleanup-on-failure my-release oci://registry-1.docker.io/bitnamicharts/nginx --values values.yaml
-  > ```
-  >
-  > This will cleanup resources created during a failed upgrade to the release `my-release`.
-  > It will delete the resources that were created during the failed upgrade.
+> [!NOTE]
+>
+> ```sh
+> helm upgrade --cleanup-on-failure my-release oci://registry-1.docker.io/bitnamicharts/nginx --values values.yaml
+> ```
+>
+> This will cleanup resources created during a failed upgrade to the release `my-release`.
+> It will delete the resources that were created during the failed upgrade.
