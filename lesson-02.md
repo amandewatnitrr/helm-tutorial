@@ -341,3 +341,13 @@
 > This will cleanup resources created during a failed upgrade to the release `my-release`.
 > It will delete the resources that were created during the failed upgrade.
 ></details>
+
+## Assignement
+
+- Create a helm deployment for `bitnami/tomcat` chart.
+- Use the `--dry-run` flag to simulate the installation process.
+- Use the `template` command to generate the templates.
+- Use the `get` command to get all information about the release.
+- Use the `history` command to view the history of the release.
+
+  ![](./imgs/demo14.gif)
