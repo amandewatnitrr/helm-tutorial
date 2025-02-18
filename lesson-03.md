@@ -332,3 +332,58 @@ Other than this there are some other additional fields that can be added to the 
 
     affinity: {}
     ```
+
+## `helm package`
+
+- The `helm package` command is used to package a chart directory into a chart archive. It is used to create a chart archive that can be used to install the chart.
+
+- Here, we will learn how to package a chart directory into a chart archive, so that it can be distributed and shared with others. It can be used to install the software across different environments, testing, staging, and production through our CI/CD pipelines as well.
+
+- Use the following command to package a chart directory into a chart archive:
+
+  ```bash
+  helm package <chart-directory>
+  ```
+
+  <details>
+  <summary>Click to see the example</summary>
+
+  ```bash
+  $ helm package test-chart
+  Successfully packaged chart and saved it to: /Users/username/test-chart-0.1.0.tgz
+  ```
+  ![](./imgs/Screenshot%202025-02-19%20at%2012.29.30 AM.png)
+
+  </details>
+
+- We can use `--dependencies-update` or `-u` flag to update the dependencies of the chart before packaging it.
+
+  ```bash
+  helm package --dependencies-update <chart-directory>
+  ```
+
+  <details>
+  <summary>Click to see the example</summary>
+
+  ```bash
+  $ helm package --dependencies-update test-chart
+  Successfully packaged chart and saved it to: /Users/username/test-chart-0.1.0.tgz
+  ```
+
+  </details>
+
+- We can also use `--destination` or `-d` flag to specify the directory where the chart archive should be saved.
+
+  ```bash
+  helm package --destination <directory> <chart-directory>
+  ```
+
+  <details>
+  <summary>Click to see the example</summary>
+
+  ```bash
+  $ helm package --destination /Users/username/charts test-chart
+  Successfully packaged chart and saved it to: /Users/username/charts/test-chart-0.1.0.tgz
+  ```
+
+  </details>
