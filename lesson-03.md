@@ -387,3 +387,34 @@ Other than this there are some other additional fields that can be added to the 
   ```
 
   </details>
+
+## `helm lint`
+
+- The `helm lint` command is used to examine a chart for possible issues. It is used to check the chart for possible issues before packaging it.
+
+  <details>
+  <summary>Click to see the example</summary>
+
+  ```sh
+  $ helm lint test-chart
+  ==> Linting test-chart
+  [INFO] Chart.yaml: icon is recommended
+
+  1 chart(s) linted, 0 chart(s) failed
+  ```
+  </details>
+
+- Error and Warning will return a 0 exit code, otherwise it will return a non-zero exit code.
+
+- For example, we have removed a bracket from `values.yaml` and, if you run `helm lint` it will return a non-zero exit code.
+
+  ```shell
+  $ helm lint test-chart
+  ==> Linting test-chart
+  [INFO] Chart.yaml: icon is recommended
+  [ERROR] values.yaml: unable to parse YAML: error converting YAML to JSON: yaml: line 19: did not find expected ',' or ']'
+  [ERROR] templates/: cannot load values.yaml: error converting YAML to JSON: yaml: line 19: did not find expected ',' or ']'
+  [ERROR] : unable to load chart cannot load values.yaml: error converting YAML to JSON: yaml: line 19: did not find expected ',' or ']'
+
+  Error: 1 chart(s) linted, 1 chart(s) failed
+  ``` 
