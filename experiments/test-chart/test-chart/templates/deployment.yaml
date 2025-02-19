@@ -1,6 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
-  {{"Helm Templating is " -}}, {{- "Cool"}}
+  {{.Values.my.custom.data }}
+  {{.Chart.Version}}
+  {{.Chart.Name}}
+  {{.Chart.AppVersion}}
+  {{.Chart.Annotations}}
+  {{.Release.Name}}
+  {{.Release.IsUpgrade}}
+  {{.Release.IsInstall}}
+  {{.Release.Service}}
+  {{.Template.Name}}
+  {{.Template.BasePath}}
 metadata:
   name: {{ include "test-chart.fullname" . }}
   labels:
