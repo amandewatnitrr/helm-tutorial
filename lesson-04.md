@@ -105,6 +105,7 @@
             {{- toYaml . | nindent 8 }}
         {{- end }}
     ```
+    </details>
 
   Run the command:
 
