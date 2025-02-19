@@ -1,5 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
+  {{"Helm Templating is " -}}, {{- "Cool"}}
 metadata:
   name: {{ include "test-chart.fullname" . }}
   labels:
