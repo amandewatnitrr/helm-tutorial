@@ -11,6 +11,7 @@ kind: Deployment
   {{.Release.Service}}
   {{.Template.Name}}
   {{.Template.BasePath}}
+  {{ .Values.my.custom.data | default "testdefault" | upper | quote }}
 metadata:
   name: {{ include "test-chart.fullname" . }}
   labels:

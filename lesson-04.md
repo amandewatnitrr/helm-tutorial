@@ -639,6 +639,7 @@
             {{- toYaml . | nindent 8 }}
         {{- end }} 
     ```
+
     </details>
 
     Now, run the following command:
@@ -679,3 +680,145 @@
     ...
     ```
 
+## Pipe `|`
+
+- If you go under the metadata section under labels we will see pipe `|` symbol. Not, only that the pipe allows us to chain  multiple expressions, commands or  function calls.
+
+  The output of function on the left side of the pipe will be passed as an input to the function on the right side of the pipe.
+
+  ```yaml
+  {{ .Values.my.custom.data | default "testdefault" | upper | quote }}
+  ```
+
+  <details>
+  <summary>deployment.yaml</summary><br>
+    
+    ```yaml
+    apiVersion: apps/v1
+    kind: Deployment
+    {{.Values.my.custom.data }}
+    {{.Chart.Version}}
+    {{.Chart.Name}}
+    {{.Chart.AppVersion}}
+    {{.Chart.Annotations}}
+    {{.Release.Name}}
+    {{.Release.IsUpgrade}}
+    {{.Release.IsInstall}}
+    {{.Release.Service}}
+    {{.Template.Name}}
+    {{.Template.BasePath}}
+    {{ .Values.my.custom.data | default "testdefault" | upper | quote }}
+    metadata:
+    name: {{ include "test-chart.fullname" . }}
+    labels:
+        {{- include "test-chart.labels" . | nindent 4 }}
+    spec:
+    {{- if not .Values.autoscaling.enabled }}
+    replicas: {{ .Values.replicaCount }}
+    {{- end }}
+    selector:
+        matchLabels:
+        {{- include "test-chart.selectorLabels" . | nindent 6 }}
+    template:
+        metadata:
+        {{- with .Values.podAnnotations }}
+        annotations:
+            {{- toYaml . | nindent 8 }}
+        {{- end }}
+        labels:
+            {{- include "test-chart.labels" . | nindent 8 }}
+            {{- with .Values.podLabels }}
+            {{- toYaml . | nindent 8 }}
+            {{- end }}
+        spec:
+        {{- with .Values.imagePullSecrets }}
+        imagePullSecrets:
+            {{- toYaml . | nindent 8 }}
+        {{- end }}
+        serviceAccountName: {{ include "test-chart.serviceAccountName" . }}
+        {{- with .Values.podSecurityContext }}
+        securityContext:
+            {{- toYaml . | nindent 8 }}
+        {{- end }}
+        containers:
+            - name: {{ .Chart.Name }}
+            {{- with .Values.securityContext }}
+            securityContext:
+                {{- toYaml . | nindent 12 }}
+            {{- end }}
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
+            ports:
+                - name: http
+                containerPort: {{ .Values.service.port }}
+                protocol: TCP
+            {{- with .Values.livenessProbe }}
+            livenessProbe:
+                {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- with .Values.readinessProbe }}
+            readinessProbe:
+                {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- with .Values.resources }}
+            resources:
+                {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- with .Values.volumeMounts }}
+            volumeMounts:
+                {{- toYaml . | nindent 12 }}
+            {{- end }}
+        {{- with .Values.volumes }}
+        volumes:
+            {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.nodeSelector }}
+        nodeSelector:
+            {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.affinity }}
+        affinity:
+            {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.tolerations }}
+        tolerations:
+            {{- toYaml . | nindent 8 }}
+        {{- end }}
+    ```
+
+    </details>
+
+    Now, run the following command:
+
+    ```bash
+    $ helm template test-chart
+    ```
+
+    Once done, the output of the command `helm template test-chart` would be somethings like this:
+
+    ```yaml
+        app.kubernetes.io/name: test-chart
+    app.kubernetes.io/instance: release-name
+    ---
+    # Source: test-chart/templates/deployment.yaml
+    apiVersion: apps/v1
+    kind: Deployment
+    test
+    0.1.0
+    test-chart
+    1.16.0
+    map[]
+    release-name
+    false
+    true
+    Helm
+    test-chart/templates/deployment.yaml
+    test-chart/templates
+    "TEST"
+    metadata:
+    name: release-name-test-chart
+    labels:
+        helm.sh/chart: test-chart-0.1.0
+        app.kubernetes.io/name: test-chart
+    ...
+    ```
