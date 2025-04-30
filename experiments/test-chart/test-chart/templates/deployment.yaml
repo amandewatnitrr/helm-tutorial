@@ -12,8 +12,20 @@ kind: Deployment
   {{.Template.Name}}
   {{.Template.BasePath}}
   {{ .Values.my.custom.data | default "testdefault" | upper | quote }}
+  
+  {{- if .Values.my.custom.flag }}
+  {{ "Output of if condition" | nindent 2 }}
+  {{- end }}
+
 metadata:
   name: {{ include "test-chart.fullname" . }}
+  region:
+      {{- with .Values.my.custom.region }}
+      # If variable over here is empty it won't be part of the output
+      {{- toYaml . | nindent 4 }}
+      {{- else }}
+      {{ "- Pacific"}}
+      {{ end }}
   labels:
     {{- include "test-chart.labels" . | nindent 4 }}
 spec:
