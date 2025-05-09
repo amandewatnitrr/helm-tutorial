@@ -13,7 +13,9 @@ kind: Deployment
   {{.Template.BasePath}}
   {{ .Values.my.custom.data | default "testdefault" | upper | quote }}
   
-  {{- if .Values.my.custom.flag }}
+  {{ $myFLAG := .Values.my.custom.flag }}
+  
+  {{- if $myFLAG }}
   {{ "Output of if condition" | nindent 2 }}
   {{- end }}
 

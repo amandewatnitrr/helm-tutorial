@@ -1359,5 +1359,269 @@
       {{ "- Pacific"}}
       {{ end }}
   ```
+
+# Defining Variables
+
+- Defining a variable in helm is pretty easy, let's look at an example on how to define a variable.
+
+  ```yaml
+  {{ $myFLAG := "value" }}  
+  ```
   
-- 
+- Once, we assign value to a variable, it becomes a variable of that type.
+
+>[!NOTE]
+> If you try to assign different values to this variable at later point in the helm chart template, those will just be ignored. They will not be considered and, only the initial value will be used.
+
+- Let's test this out with an example. For this we will be only making changes to  `deployment.yaml` file only.
+
+
+  `deployment.yaml`
+  
+  
+  ```yaml
+  apiVersion: apps/v1
+  kind: Deployment
+    {{.Values.my.custom.data }}
+    {{.Chart.Version}}
+    {{.Chart.Name}}
+    {{.Chart.AppVersion}}
+    {{.Chart.Annotations}}
+    {{.Release.Name}}
+    {{.Release.IsUpgrade}}
+    {{.Release.IsInstall}}
+    {{.Release.Service}}
+    {{.Template.Name}}
+    {{.Template.BasePath}}
+    {{ .Values.my.custom.data | default "testdefault" | upper | quote }}
+
+    {{ $myFLAG := .Values.my.custom.flag }}
+
+    {{- if $myFLAG }}
+    {{ "Output of if condition" | nindent 2 }}
+    {{- end }}
+
+  metadata:
+    name: {{ include "test-chart.fullname" . }}
+    region:
+            {{- with .Values.my.custom.region }}
+                    # If variable over here is empty it won't be part of the output
+                    {{- toYaml . | nindent 4 }}
+                    {{- else }}
+                    {{ "- Pacific"}}
+                    {{ end }}
+    labels:
+            {{- include "test-chart.labels" . | nindent 4 }}
+  spec:
+          {{- if not .Values.autoscaling.enabled }}
+    replicas: {{ .Values.replicaCount }}
+          {{- end }}
+    selector:
+      matchLabels:
+              {{- include "test-chart.selectorLabels" . | nindent 6 }}
+    template:
+      metadata:
+              {{- with .Values.podAnnotations }}
+        annotations:
+                {{- toYaml . | nindent 8 }}
+              {{- end }}
+        labels:
+                {{- include "test-chart.labels" . | nindent 8 }}
+                        {{- with .Values.podLabels }}
+                        {{- toYaml . | nindent 8 }}
+                        {{- end }}
+      spec:
+              {{- with .Values.imagePullSecrets }}
+        imagePullSecrets:
+                {{- toYaml . | nindent 8 }}
+              {{- end }}
+        serviceAccountName: {{ include "test-chart.serviceAccountName" . }}
+              {{- with .Values.podSecurityContext }}
+        securityContext:
+                {{- toYaml . | nindent 8 }}
+              {{- end }}
+        containers:
+          - name: {{ .Chart.Name }}
+                  {{- with .Values.securityContext }}
+            securityContext:
+                    {{- toYaml . | nindent 12 }}
+                  {{- end }}
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
+            ports:
+              - name: http
+                containerPort: {{ .Values.service.port }}
+                protocol: TCP
+                  {{- with .Values.livenessProbe }}
+            livenessProbe:
+                    {{- toYaml . | nindent 12 }}
+                  {{- end }}
+                  {{- with .Values.readinessProbe }}
+            readinessProbe:
+                    {{- toYaml . | nindent 12 }}
+                  {{- end }}
+                  {{- with .Values.resources }}
+            resources:
+                    {{- toYaml . | nindent 12 }}
+                  {{- end }}
+                  {{- with .Values.volumeMounts }}
+            volumeMounts:
+                    {{- toYaml . | nindent 12 }}
+                  {{- end }}
+              {{- with .Values.volumes }}
+        volumes:
+                {{- toYaml . | nindent 8 }}
+              {{- end }}
+              {{- with .Values.nodeSelector }}
+        nodeSelector:
+                {{- toYaml . | nindent 8 }}
+              {{- end }}
+              {{- with .Values.affinity }}
+        affinity:
+                {{- toYaml . | nindent 8 }}
+              {{- end }}
+              {{- with .Values.tolerations }}
+        tolerations:
+                {{- toYaml . | nindent 8 }}
+              {{- end }}
+
+  ```
+
+- Here, you can clearly see that, how we have utilised variables.
+
+  ```yaml
+  {{ $myFLAG := .Values.my.custom.flag }}
+  
+      {{- if $myFLAG }}
+      {{ "Output of if condition" | nindent 2 }}
+      {{- end }}
+  ```
+
+- If you run the command `helm template test-chart`, you will see the following output:
+
+  ```yaml
+      ~/G/helm-tutorial/e/test-chart  on   main !2  helm template test-chart
+  ---
+  # Source: test-chart/templates/serviceaccount.yaml
+  apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: release-name-test-chart
+    labels:
+      helm.sh/chart: test-chart-0.1.0
+      app.kubernetes.io/name: test-chart
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/version: "1.16.0"
+      app.kubernetes.io/managed-by: Helm
+  automountServiceAccountToken: true
+  ---
+  # Source: test-chart/templates/service.yaml
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: release-name-test-chart
+    labels:
+      helm.sh/chart: test-chart-0.1.0
+      app.kubernetes.io/name: test-chart
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/version: "1.16.0"
+      app.kubernetes.io/managed-by: Helm
+  spec:
+    type: ClusterIP
+    ports:
+      - port: 80
+        targetPort: http
+        protocol: TCP
+        name: http
+    selector:
+      app.kubernetes.io/name: test-chart
+      app.kubernetes.io/instance: release-name
+  ---
+  # Source: test-chart/templates/deployment.yaml
+  apiVersion: apps/v1
+  kind: Deployment
+    test
+    0.1.0
+    test-chart
+    1.16.0
+    map[]
+    release-name
+    false
+    true
+    Helm
+    test-chart/templates/deployment.yaml
+    test-chart/templates
+    "TEST"
+  
+  
+  
+    Output of if condition
+  
+  metadata:
+    name: release-name-test-chart
+    region:
+        # If variable over here is empty it won't be part of the output
+      - US
+      - Pacific
+      - EMEA
+      - China
+    labels:
+      helm.sh/chart: test-chart-0.1.0
+      app.kubernetes.io/name: test-chart
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/version: "1.16.0"
+      app.kubernetes.io/managed-by: Helm
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: test-chart
+        app.kubernetes.io/instance: release-name
+    template:
+      metadata:
+        labels:
+          helm.sh/chart: test-chart-0.1.0
+          app.kubernetes.io/name: test-chart
+          app.kubernetes.io/instance: release-name
+          app.kubernetes.io/version: "1.16.0"
+          app.kubernetes.io/managed-by: Helm
+      spec:
+        serviceAccountName: release-name-test-chart
+        containers:
+          - name: test-chart
+            image: "nginx:1.16.0"
+            imagePullPolicy: IfNotPresent
+            ports:
+              - name: http
+                containerPort: 80
+                protocol: TCP
+            livenessProbe:
+              httpGet:
+                path: /
+                port: http
+            readinessProbe:
+              httpGet:
+                path: /
+                port: http
+  ---
+  # Source: test-chart/templates/tests/test-connection.yaml
+  apiVersion: v1
+  kind: Pod
+  metadata:
+    name: "release-name-test-chart-test-connection"
+    labels:
+      helm.sh/chart: test-chart-0.1.0
+      app.kubernetes.io/name: test-chart
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/version: "1.16.0"
+      app.kubernetes.io/managed-by: Helm
+    annotations:
+      "helm.sh/hook": test
+  spec:
+    containers:
+      - name: wget
+        image: busybox
+        command: ['wget']
+        args: ['release-name-test-chart:80']
+    restartPolicy: Never
+  ```
