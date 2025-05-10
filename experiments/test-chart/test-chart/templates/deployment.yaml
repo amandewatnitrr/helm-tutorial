@@ -28,6 +28,10 @@ metadata:
       {{- else }}
       {{ "- Pacific"}}
       {{ end }}
+  deployRegionPossible:
+    {{- range .Values.my.custom.region }}
+    - {{.}}
+    {{- end}}
   labels:
     {{- include "test-chart.labels" . | nindent 4 }}
 spec:
