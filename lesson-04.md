@@ -2151,4 +2151,7 @@
         args: ['release-name-test-chart:80']
     restartPolicy: Never
   ```
+  
+>[!NOTE]
+> We can `dry-run` the template command using `--dry-run` attribute along side `helm template` command.
 
