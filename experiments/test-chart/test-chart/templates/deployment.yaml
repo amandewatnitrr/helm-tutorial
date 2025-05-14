@@ -32,6 +32,10 @@ metadata:
     {{- range .Values.my.custom.region }}
     - {{.}}
     {{- end}}
+  image:
+    {{- range $key,$value := .Values.image }}
+    - {{$key}}:{{$value | quote}}
+    {{- end }}
   labels:
     {{- include "test-chart.labels" . | nindent 4 }}
 spec:
