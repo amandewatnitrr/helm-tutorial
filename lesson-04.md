@@ -2155,3 +2155,90 @@
 >[!NOTE]
 > We can `dry-run` the template command using `--dry-run` attribute along side `helm template` command.
 
+>[!TIP]
+> If you want to get the manifest that was sent to Kubernetes use the command `helm get manifest <chart-name>`.
+
+  `manifest` for `test`
+
+  ```yaml
+  helm get manifest test
+  ---
+  # Source: test-chart/templates/serviceaccount.yaml
+  apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: test-test-chart
+    labels:
+      helm.sh/chart: test-chart-0.1.0
+      app.kubernetes.io/name: test-chart
+      app.kubernetes.io/instance: test
+      app.kubernetes.io/version: "1.16.0"
+      app.kubernetes.io/managed-by: Helm
+  automountServiceAccountToken: true
+  ---
+  # Source: test-chart/templates/service.yaml
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: test-test-chart
+    labels:
+      helm.sh/chart: test-chart-0.1.0
+      app.kubernetes.io/name: test-chart
+      app.kubernetes.io/instance: test
+      app.kubernetes.io/version: "1.16.0"
+      app.kubernetes.io/managed-by: Helm
+  spec:
+    type: ClusterIP
+    ports:
+      - port: 80
+        targetPort: http
+        protocol: TCP
+        name: http
+    selector:
+      app.kubernetes.io/name: test-chart
+      app.kubernetes.io/instance: test
+  ---
+  # Source: test-chart/templates/deployment.yaml
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: test-test-chart
+    labels:
+      helm.sh/chart: test-chart-0.1.0
+      app.kubernetes.io/name: test-chart
+      app.kubernetes.io/instance: test
+      app.kubernetes.io/version: "1.16.0"
+      app.kubernetes.io/managed-by: Helm
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: test-chart
+        app.kubernetes.io/instance: test
+    template:
+      metadata:
+        labels:
+          helm.sh/chart: test-chart-0.1.0
+          app.kubernetes.io/name: test-chart
+          app.kubernetes.io/instance: test
+          app.kubernetes.io/version: "1.16.0"
+          app.kubernetes.io/managed-by: Helm
+      spec:
+        serviceAccountName: test-test-chart
+        containers:
+          - name: test-chart
+            image: "nginx:1.16.0"
+            imagePullPolicy: IfNotPresent
+            ports:
+              - name: http
+                containerPort: 80
+                protocol: TCP
+            livenessProbe:
+              httpGet:
+                path: /
+                port: http
+            readinessProbe:
+              httpGet:
+                path: /
+                port: http
+  ```
