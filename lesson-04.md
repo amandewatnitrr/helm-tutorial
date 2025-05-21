@@ -2242,3 +2242,39 @@
                 path: /
                 port: http
   ```
+
+## Revisiting `_helpers.tpl` file
+
+- `.tpl` stands for template because this file holds several templates that can used across other template files. 
+- The very first that is defined over here is the `test-chart.name`.
+- Every template starts with a comment.
+- A template is more or less like a function in programming language.
+- The first one begins with the `define` keyword within the action block followed by the name of the template.
+
+  In our case if we see, it's:
+
+  ```yaml
+  {{- define "test-chart.name" -}}
+  ```
+  
+- `test-chart` in our case is a uniqyue namespace. Followed by the actual name of the template. We can look at this as a function name in programming language.
+
+- The question, that you might think of is, why do we need a namespace, cause for the charts we have been creating or application charts to deploy our applications to Kubernetes. 
+
+- But, helm also supports library charts. These charts are not specific to any application. We can reuse those charts across the charts in our applications. In that case, we don't want multiple people naming these templates, giving there templates the same name, and than we having problems to use those templates in our application.
+
+- For example, if a guy has template called `loadOnDeployment`. This is a template somebody has created, and they have given it out as a library chart. Now, we start using this template across our template files. And, another library has also used the same template name. And, we are using both the libraries now in our template filesm, we don't want to have issues using the same name, and that's why we have the concept of namespaces. 
+
+>[!TIP]
+> Namespaces in helm as for the given context above are like namespaces in `.NET` and packages in Java and modules in python, that uniquely identify a particular function, so that we can reuse the same functuion name across modules, across packages, projects and so on...
+
+- Within the blocks of the templates we define the entire logic. In this case, it is simply defaulting the chart name. The `test-chart.name` will return the chart name to the `.Chart.Name`.
+
+- If, there is no value in the `values.yaml` file for the field `nameOverride`. If we provide it that will be used otherwisse the chart name will be returned and rendered in the template. The comments are not rendered in the template.
+
+>[!IMP]
+> To do a comment in Helm use the following pattern:
+> `{{/*.....*/}}`
+
+>[!NOTE]
+> The Chart Name we discussed just about in the above section is specifically truncated to 63 characters because some kubernetes name fields are limited to this. 
