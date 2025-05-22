@@ -2278,3 +2278,556 @@
 
 >[!NOTE]
 > The Chart Name we discussed just about in the above section is specifically truncated to 63 characters because some kubernetes name fields are limited to this. 
+
+## Creating and Using Custom Template
+
+- In this section, we will learn how to define our own templates, and use them.
+
+- To, do that go to the `_helpers.tpl` file copy any of the existing templates, and paste it on the top as follows: 
+
+  ```tpl
+  {{/*
+  My Custom Template
+  */}}
+  {{- define "test-chart.myTemplate" -}}
+  
+  {{- end }}
+  
+  {{/*
+  Expand the name of the chart.
+  */}}
+  {{- define "test-chart.name" -}}
+  {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+  {{- end }}
+  
+  {{/*
+  Create a default fully qualified app name.
+  We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+  If release name contains chart name it will be used as a full name.
+  */}}
+  {{- define "test-chart.fullname" -}}
+  {{- if .Values.fullnameOverride }}
+  {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+  {{- else }}
+  {{- $name := default .Chart.Name .Values.nameOverride }}
+  {{- if contains $name .Release.Name }}
+  {{- .Release.Name | trunc 63 | trimSuffix "-" }}
+  {{- else }}
+  {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+  
+  {{/*
+  Create chart name and version as used by the chart label.
+  */}}
+  {{- define "test-chart.chart" -}}
+  {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+  {{- end }}
+  
+  {{/*
+  Common labels
+  */}}
+  {{- define "test-chart.labels" -}}
+  helm.sh/chart: {{ include "test-chart.chart" . }}
+  {{ include "test-chart.selectorLabels" . }}
+  {{- if .Chart.AppVersion }}
+  app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+  {{- end }}
+  app.kubernetes.io/managed-by: {{ .Release.Service }}
+  {{- end }}
+  
+  {{/*
+  Selector labels
+  */}}
+  {{- define "test-chart.selectorLabels" -}}
+  app.kubernetes.io/name: {{ include "test-chart.name" . }}
+  app.kubernetes.io/instance: {{ .Release.Name }}
+  {{- end }}
+  
+  {{/*
+  Create the name of the service account to use
+  */}}
+  {{- define "test-chart.serviceAccountName" -}}
+  {{- if .Values.serviceAccount.create }}
+  {{- default (include "test-chart.fullname" .) .Values.serviceAccount.name }}
+  {{- else }}
+  {{- default "default" .Values.serviceAccount.name }}
+  {{- end }}
+  {{- end }}
+  ```
+
+- Edit the `_helpers.tpl` file something similar to this:
+
+  ```tpl
+  {{/*
+  My Custom Template
+  */}}
+  {{- define "test-chart.myTemplate" -}}
+  {{- .Values.myValue }}
+  {{- end }}
+  
+  {{/*
+  Expand the name of the chart.
+  */}}
+  {{- define "test-chart.name" -}}
+  {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+  {{- end }}
+  
+  {{/*
+  Create a default fully qualified app name.
+  We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+  If release name contains chart name it will be used as a full name.
+  */}}
+  {{- define "test-chart.fullname" -}}
+  {{- if .Values.fullnameOverride }}
+  {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+  {{- else }}
+  {{- $name := default .Chart.Name .Values.nameOverride }}
+  {{- if contains $name .Release.Name }}
+  {{- .Release.Name | trunc 63 | trimSuffix "-" }}
+  {{- else }}
+  {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+  
+  {{/*
+  Create chart name and version as used by the chart label.
+  */}}
+  {{- define "test-chart.chart" -}}
+  {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+  {{- end }}
+  
+  {{/*
+  Common labels
+  */}}
+  {{- define "test-chart.labels" -}}
+  helm.sh/chart: {{ include "test-chart.chart" . }}
+  {{ include "test-chart.selectorLabels" . }}
+  {{- if .Chart.AppVersion }}
+  app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+  {{- end }}
+  app.kubernetes.io/managed-by: {{ .Release.Service }}
+  {{- end }}
+  
+  {{/*
+  Selector labels
+  */}}
+  {{- define "test-chart.selectorLabels" -}}
+  app.kubernetes.io/name: {{ include "test-chart.name" . }}
+  app.kubernetes.io/instance: {{ .Release.Name }}
+  {{- end }}
+  
+  {{/*
+  Create the name of the service account to use
+  */}}
+  {{- define "test-chart.serviceAccountName" -}}
+  {{- if .Values.serviceAccount.create }}
+  {{- default (include "test-chart.fullname" .) .Values.serviceAccount.name }}
+  {{- else }}
+  {{- default "default" .Values.serviceAccount.name }}
+  {{- end }}
+  {{- end }}
+  ```
+  
+- Update the Value in `values.yaml` file:
+
+  ```yaml
+  # Default values for test-chart.
+  # This is a YAML-formatted file.
+  # Declare variables to be passed into your templates.
+  
+  my:
+    custom:
+      data: "test"
+      flag: true
+      region:
+        - US
+        - Pacific
+        - EMEA
+        - China
+  
+  # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
+  replicaCount: 1
+  
+  # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
+  image:
+    repository: nginx
+    # This sets the pull policy for images.
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: ""
+  
+  # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+  imagePullSecrets: []
+  # This is to override the chart name.
+  nameOverride: ""
+  fullnameOverride: ""
+  
+  # This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
+  serviceAccount:
+    # Specifies whether a service account should be created
+    create: true
+    # Automatically mount a ServiceAccount's API credentials?
+    automount: true
+    # Annotations to add to the service account
+    annotations: {}
+    # The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name: ""
+  
+  # This is for setting Kubernetes Annotations to a Pod.
+  # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  podAnnotations: {}
+  # This is for setting Kubernetes Labels to a Pod.
+  # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  podLabels: {}
+  
+  podSecurityContext: {}
+    # fsGroup: 2000
+  
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+  
+  # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
+  service:
+    # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+    type: ClusterIP
+    # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
+    port: 80
+  
+  # This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+  
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  
+  # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+  livenessProbe:
+    httpGet:
+      path: /
+      port: http
+  readinessProbe:
+    httpGet:
+      path: /
+      port: http
+  
+  # This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+  
+  # Additional volumes on the output Deployment definition.
+  volumes: []
+  # - name: foo
+  #   secret:
+  #     secretName: mysecret
+  #     optional: false
+  
+  # Additional volumeMounts on the output Deployment definition.
+  volumeMounts: []
+  # - name: foo
+  #   mountPath: "/etc/foo"
+  #   readOnly: true
+  
+  nodeSelector: {}
+  
+  tolerations: []
+  
+  affinity: {}
+  
+  
+  myValue: test
+  ```
+  
+- Utilise the templates value in `deployment.yaml`.
+
+  ```yaml
+  apiVersion: apps/v1
+  kind: Deployment
+    {{.Values.my.custom.data }}
+    {{.Chart.Version}}
+    {{.Chart.Name}}
+    {{.Chart.AppVersion}}
+    {{.Chart.Annotations}}
+    {{.Release.Name}}
+    {{.Release.IsUpgrade}}
+    {{.Release.IsInstall}}
+    {{.Release.Service}}
+    {{.Template.Name}}
+    {{.Template.BasePath}}
+    {{ .Values.my.custom.data | default "testdefault" | upper | quote }}
+    
+    {{ $myFLAG := .Values.my.custom.flag }}
+    
+    {{- if $myFLAG }}
+    {{ "Output of if condition" | nindent 2 }}
+    {{- end }}
+  
+  metadata:
+    name: {{ include "test-chart.fullname" . }}
+    customTemplateValue: {{template "test-chart.myTemplate" . }}
+    region:
+        {{- with .Values.my.custom.region }}
+        # If variable over here is empty it won't be part of the output
+        {{- toYaml . | nindent 4 }}
+        {{- else }}
+        {{ "- Pacific"}}
+        {{ end }}
+    deployRegionPossible:
+      {{- range .Values.my.custom.region }}
+      - {{.}}
+      {{- end}}
+    image:
+      {{- range $key,$value := .Values.image }}
+      - {{$key}}:{{$value | quote}}
+      {{- end }}
+    labels:
+      {{- include "test-chart.labels" . | nindent 4 }}
+  spec:
+    {{- if not .Values.autoscaling.enabled }}
+    replicas: {{ .Values.replicaCount }}
+    {{- end }}
+    selector:
+      matchLabels:
+        {{- include "test-chart.selectorLabels" . | nindent 6 }}
+    template:
+      metadata:
+        {{- with .Values.podAnnotations }}
+        annotations:
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+        labels:
+          {{- include "test-chart.labels" . | nindent 8 }}
+          {{- with .Values.podLabels }}
+          {{- toYaml . | nindent 8 }}
+          {{- end }}
+      spec:
+        {{- with .Values.imagePullSecrets }}
+        imagePullSecrets:
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+        serviceAccountName: {{ include "test-chart.serviceAccountName" . }}
+        {{- with .Values.podSecurityContext }}
+        securityContext:
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+        containers:
+          - name: {{ .Chart.Name }}
+            {{- with .Values.securityContext }}
+            securityContext:
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
+            ports:
+              - name: http
+                containerPort: {{ .Values.service.port }}
+                protocol: TCP
+            {{- with .Values.livenessProbe }}
+            livenessProbe:
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- with .Values.readinessProbe }}
+            readinessProbe:
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- with .Values.resources }}
+            resources:
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- with .Values.volumeMounts }}
+            volumeMounts:
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+        {{- with .Values.volumes }}
+        volumes:
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.nodeSelector }}
+        nodeSelector:
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.affinity }}
+        affinity:
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.tolerations }}
+        tolerations:
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+  
+  ```
+  
+- Run the command `helm template test-chart`. You will see the following output:
+
+  ```bash
+     ~/G/helm-tutorial/e/test-chart  on   main !3  helm template test-chart
+  ---
+  # Source: test-chart/templates/serviceaccount.yaml
+  apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: release-name-test-chart
+    labels:
+      helm.sh/chart: test-chart-0.1.0
+      app.kubernetes.io/name: test-chart
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/version: "1.16.0"
+      app.kubernetes.io/managed-by: Helm
+  automountServiceAccountToken: true
+  ---
+  # Source: test-chart/templates/service.yaml
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: release-name-test-chart
+    labels:
+      helm.sh/chart: test-chart-0.1.0
+      app.kubernetes.io/name: test-chart
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/version: "1.16.0"
+      app.kubernetes.io/managed-by: Helm
+  spec:
+    type: ClusterIP
+    ports:
+      - port: 80
+        targetPort: http
+        protocol: TCP
+        name: http
+    selector:
+      app.kubernetes.io/name: test-chart
+      app.kubernetes.io/instance: release-name
+  ---
+  # Source: test-chart/templates/deployment.yaml
+  apiVersion: apps/v1
+  kind: Deployment
+    test
+    0.1.0
+    test-chart
+    1.16.0
+    map[]
+    release-name
+    false
+    true
+    Helm
+    test-chart/templates/deployment.yaml
+    test-chart/templates
+    "TEST"
+  
+  
+  
+    Output of if condition
+  
+  metadata:
+    name: release-name-test-chart
+    customTemplateValue: test
+    region:
+        # If variable over here is empty it won't be part of the output
+      - US
+      - Pacific
+      - EMEA
+      - China
+    deployRegionPossible:
+      - US
+      - Pacific
+      - EMEA
+      - China
+    image:
+      - pullPolicy:"IfNotPresent"
+      - repository:"nginx"
+      - tag:""
+    labels:
+      helm.sh/chart: test-chart-0.1.0
+      app.kubernetes.io/name: test-chart
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/version: "1.16.0"
+      app.kubernetes.io/managed-by: Helm
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: test-chart
+        app.kubernetes.io/instance: release-name
+    template:
+      metadata:
+        labels:
+          helm.sh/chart: test-chart-0.1.0
+          app.kubernetes.io/name: test-chart
+          app.kubernetes.io/instance: release-name
+          app.kubernetes.io/version: "1.16.0"
+          app.kubernetes.io/managed-by: Helm
+      spec:
+        serviceAccountName: release-name-test-chart
+        containers:
+          - name: test-chart
+            image: "nginx:1.16.0"
+            imagePullPolicy: IfNotPresent
+            ports:
+              - name: http
+                containerPort: 80
+                protocol: TCP
+            livenessProbe:
+              httpGet:
+                path: /
+                port: http
+            readinessProbe:
+              httpGet:
+                path: /
+                port: http
+  ---
+  # Source: test-chart/templates/tests/test-connection.yaml
+  apiVersion: v1
+  kind: Pod
+  metadata:
+    name: "release-name-test-chart-test-connection"
+    labels:
+      helm.sh/chart: test-chart-0.1.0
+      app.kubernetes.io/name: test-chart
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/version: "1.16.0"
+      app.kubernetes.io/managed-by: Helm
+    annotations:
+      "helm.sh/hook": test
+  spec:
+    containers:
+      - name: wget
+        image: busybox
+        command: ['wget']
+        args: ['release-name-test-chart:80']
+    restartPolicy: Never
+  ```
+  
+- Look for the deployment section, and specifically look for variable `customTemplateValue`.

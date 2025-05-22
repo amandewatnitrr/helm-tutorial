@@ -21,6 +21,7 @@ kind: Deployment
 
 metadata:
   name: {{ include "test-chart.fullname" . }}
+  customTemplateValue: {{template "test-chart.myTemplate" . }}
   region:
       {{- with .Values.my.custom.region }}
       # If variable over here is empty it won't be part of the output
