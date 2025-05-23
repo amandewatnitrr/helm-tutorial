@@ -1,42 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
-  {{.Values.my.custom.data }}
-  {{.Chart.Version}}
-  {{.Chart.Name}}
-  {{.Chart.AppVersion}}
-  {{.Chart.Annotations}}
-  {{.Release.Name}}
-  {{.Release.IsUpgrade}}
-  {{.Release.IsInstall}}
-  {{.Release.Service}}
-  {{.Template.Name}}
-  {{.Template.BasePath}}
-  {{ .Values.my.custom.data | default "testdefault" | upper | quote }}
-  
-  {{ $myFLAG := .Values.my.custom.flag }}
-  
-  {{- if $myFLAG }}
-  {{ "Output of if condition" | nindent 2 }}
-  {{- end }}
-
 metadata:
   name: {{ include "test-chart.fullname" . }}
-  customTemplateValue: {{template "test-chart.myTemplate" . }}
-  region:
-      {{- with .Values.my.custom.region }}
-      # If variable over here is empty it won't be part of the output
-      {{- toYaml . | nindent 4 }}
-      {{- else }}
-      {{ "- Pacific"}}
-      {{ end }}
-  deployRegionPossible:
-    {{- range .Values.my.custom.region }}
-    - {{.}}
-    {{- end}}
-  image:
-    {{- range $key,$value := .Values.image }}
-    - {{$key}}:{{$value | quote}}
-    {{- end }}
   labels:
     {{- include "test-chart.labels" . | nindent 4 }}
 spec:

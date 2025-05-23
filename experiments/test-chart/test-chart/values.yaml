@@ -132,5 +132,8 @@ tolerations: []
 
 affinity: {}
 
+# Metrics exporter (simple addon)
+metrics:
+  enabled: true
 
 myValue: test
