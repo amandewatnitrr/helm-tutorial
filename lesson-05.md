@@ -12,7 +12,7 @@
 
 - Dependencies are specified in the `Chart.yaml` file under the dependencies section. Let's extend our example:
 
-    ```yaml
+  ```yaml
   apiVersion: v2
   name: test-chart
   description: A Helm chart for Kubernetes
@@ -43,7 +43,7 @@
     version: 4.6.0  # PSP-free version
     repository: https://prometheus-community.github.io/helm-charts
     condition: metrics.enabled
-    ```
+  ```
   
 - Dependency Fields Explained:
 
@@ -71,7 +71,7 @@
   And, we see the following output:
 
   ```bash
-     ~/G/helm-tutorial/e/test-chart  on   main +1 !3  helm dependency update test-chart
+  > helm dependency update test-chart
   Hang tight while we grab the latest from your chart repositories...
   ...Successfully got an update from the "kubernetes-dashboard" chart repository
   ...Successfully got an update from the "kong" chart repository
@@ -96,7 +96,7 @@
   And, we get the following output:
 
   ```bash
-     ~/G/helm-tutorial/e/test-chart  on   main +1 !7 ?2  helm dependency list test-chart
+  > helm dependency list test-chart
   NAME                            VERSION REPOSITORY                                              STATUS
   prometheus-node-exporter        4.6.0   https://prometheus-community.github.io/helm-charts      ok
   ```
@@ -104,7 +104,7 @@
 - Use the helm install command, to install the chart:
 
   ```bash
-     ~/G/helm-tutorial/e/test-chart  on   main +1 !7 ?2  helm install test test-chart
+  > helm install test test-chart
   NAME: test
   LAST DEPLOYED: Fri May 23 08:55:20 2025
   NAMESPACE: default
