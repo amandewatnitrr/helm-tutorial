@@ -151,3 +151,90 @@
   
   Something of this sort should be visible. This is how you can add a dependency within a chart.
 
+- Using this `_helpers.tpl` file where we have specified a specific version for the prometheus chart, we can assign a range of version for the use.
+
+  For example in our scenario we can use:
+
+  ```yaml
+  dependencies:
+  - name: prometheus-node-exporter
+    version: ">=4.2.0" 
+    {{/* All versions greater than 4.2.0 */}}
+    repository: https://prometheus-community.github.io/helm-charts
+    condition: metrics.enabled
+  ```
+  
+- In a similar fashion we can combine these conditions, so we can modify it as:
+
+  ```yaml
+  dependencies:
+  - name: prometheus-node-exporter
+    version: ">=4.2.0 and =<4.6.0" 
+    {{/* All versions greater than 4.2.0 */}}
+    repository: https://prometheus-community.github.io/helm-charts
+    condition: metrics.enabled
+  ```
+
+- You might be thinking what is the advantage of using these ranges instead of exact version. If we are sure that our application, the chart we are trying to deploy, which is using this dependency, can work with the latest version of the dependency.
+
+- Let's consider the scenario that postgres is going to release a new version of itself, and we are pretty much sure that it will work just fine with the new upcoming release. So, instead of specifying one specific version we can set a range for this.
+
+### Use Dependencies Conditionally
+
+- Since, we define a chart dependency and, we have the dependent chart under the charts folder, it will be used everytime an installation or upgrade of our chart is done, and that chart will than be installed onto the Kubernetes Cluster.
+
+- But, if we want that to happen on a condition which we can pass from the `values.yaml` file. It's super simple to do so.
+
+- Just go the `values.yaml` chart, and create a variable similar to this:
+
+  ```yaml
+  # Metrics exporter (simple addon)
+  metrics:
+    enabled: true
+  ```
+  
+- Once, done just go to `Chart.yaml`, and put the `conditions` parameter as we have done earlier as well with the associated dependency.
+
+  ```yaml
+  apiVersion: v2
+  name: test-chart
+  description: A Helm chart for Kubernetes
+  
+  # A chart can be either an 'application' or a 'library' chart.
+  #
+  # Application charts are a collection of templates that can be packaged into versioned archives
+  # to be deployed.
+  #
+  # Library charts provide useful utilities or functions for the chart developer. They're included as
+  # a dependency of application charts to inject those utilities and functions into the rendering
+  # pipeline. Library charts do not define any templates and therefore cannot be deployed.
+  type: application
+  
+  # This is the chart version. This version number should be incremented each time you make changes
+  # to the chart and its templates, including the app version.
+  # Versions are expected to follow Semantic Versioning (https://semver.org/)
+  version: 0.1.0
+  
+  # This is the version number of the application being deployed. This version number should be
+  # incremented each time you make changes to the application. Versions are not expected to
+  # follow Semantic Versioning. They should reflect the version the application is using.
+  # It is recommended to use it with quotes.
+  appVersion: "1.16.0"
+  
+  dependencies:
+    - name: prometheus-node-exporter
+      version: 4.6.0  # PSP-free version
+      repository: https://prometheus-community.github.io/helm-charts
+      condition: metrics.enabled
+  ```
+
+- Similarly, we can also do the same using tags as well:
+
+  ```yaml
+  dependencies:
+      - name: prometheus-node-exporter
+        version: 4.6.0  # PSP-free version
+        repository: https://prometheus-community.github.io/helm-charts
+        tags:
+          - enabled
+  ```
