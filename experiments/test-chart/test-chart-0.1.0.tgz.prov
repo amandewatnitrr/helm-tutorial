@@ -1,0 +1,31 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+apiVersion: v2
+appVersion: 1.16.0
+dependencies:
+- - condition: metrics.enabled
+  name: prometheus-node-exporter
+  repository: https://prometheus-community.github.io/helm-charts
+  version: 4.6.0
+description: A Helm chart for Kubernetes
+name: test-chart
+type: application
+version: 0.1.0
+
+...
+files:
+  test-chart-0.1.0.tgz: sha256:2de52f3566757257213f4f938c6510b301c6f28642481fdd42d701c7e08850c9
+-----BEGIN PGP SIGNATURE-----
+
+wsDcBAEBCgAQBQJoRcqBCRBmtL/Ri1dYVwAAz8MMAEU1mjuTM/9EokXuanSuFQ7R
+WcSiYizqVHPdmAZtALfOyBAxxiAUJDshLsmTE7X9yXOeTro7au60ZhAOzDgpnpUo
+vDBBLUIqOC3i+hTuH0qEkPcEDDUfR+AK+A+ldxZWELaKFP4ym0SMvr6xUpHLFdRY
+VXH3Wzs210hJqHJOBsviuq4SkL2Rsw8hQ6aZZSkG75HsUUz5clSEF+Vk9u+V+OBU
+3Ky+uDoguq+f8lgZ9OpMQTBSaoaBrndwGBRsIwdmi4ufqRc0E+xb0yqg+ygzaqOW
+0cke69cekRRd+LJc3QU47AB5omZAzVGu9Cq9O38tlAKTEzZhFWGAKhwVevrn/c4r
+SNnkz58IsVKvyjpX612XMLWAr1UKKtBCiQSQot5IVPp4a9ZFPIuasFGrdgqoG5Y3
+pn2w4FRCGtAPLoTNJqnYAK6K19zDkO+09xCcOynmT5Sq/z8oM8yZDdHEvf+gUp5v
+j4BAseCDQxus1M/gjlrVofpLx6i4VnNbiPpjabn8uQ==
+=ktbV
+-----END PGP SIGNATURE-----
